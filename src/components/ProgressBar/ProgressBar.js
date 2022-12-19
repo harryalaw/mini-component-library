@@ -6,47 +6,68 @@ import { COLORS } from '../../constants';
 import VisuallyHidden from '../VisuallyHidden';
 
 const SIZES = {
-  'small': {
-    '--outerHeight': '8px',
-    '--outerPadding': '0px',
-    '--innerHeight': '8px',
-  },
-  'medium': {
-    '--outerHeight': '12px',
-    '--outerPadding': '0px',
-    '--innerHeight': '12px',
-  },
-  'large': {
-    '--outerHeight': '24px',
-    '--outerPadding': '4px',
-    '--innerHeight': '16px',
-  }
+    'small': {
+        height: 8,
+        padding: 0,
+        radius: 4,
+    },
+    'medium': {
+        height: 12,
+        padding: 0,
+        radius: 4,
+    },
+    'large': {
+        height: 16,
+        padding: 4,
+        radius: 8,
+    }
 }
 
 const ProgressBar = ({ value, size }) => {
-  const styles = SIZES[size]
-  value = Math.max(0, value)
-  value = Math.min(100, value)
-  return <OuterBar style={styles} role="progressbar" aria-valuenow={value} aria-labell={"Progress Bar"}>
-    <InnerBar style={styles} value={value} />
-  </OuterBar >
+    const styles = SIZES[size]
+    value = Math.max(0, value)
+    value = Math.min(100, value)
+
+    return (
+        <Wrapper
+            style={{
+                '--padding': styles.padding + 'px',
+                '--radius': styles.radius + 'px'
+            }}
+            role="progressbar"
+            aria-valuenow={value}
+            aria-labell={"Progress Bar"}
+        >
+            <VisuallyHidden>{value}%</VisuallyHidden>
+            <BarWrapper>
+                <Bar style={{
+                    '--width': value + '%',
+                    '--height': styles.height + 'px'
+                }}
+                />
+            </BarWrapper>
+        </Wrapper>
+    )
 };
 
-const OuterBar = styled.div`
-  width: 370px;
-  height: var(--outerHeight);
-  padding: var(--outerPadding);
-  background-color: ${COLORS.transparentGray15};
-  position: relative;
-  border-radius: 8px;
-  box-shadow: inset 0px 2px 4px ${COLORS.transparentGray35};
+const BarWrapper = styled.div`
+  /* Trim off corners when progress bar is near full  */
+  overflow: hidden;
+  border-radius: 4px;
 `
 
-const InnerBar = styled.div`
-  width: ${p => p.value}%;
-  height: var(--innerHeight);
+const Wrapper = styled.div`
+  background-color: ${COLORS.transparentGray15};
+  box-shadow: inset 0px 2px 4px ${COLORS.transparentGray35};
+  border-radius: var(--radius);
+  padding: var(--padding);
+`
+
+const Bar = styled.div`
+  width: var(--width);
+  height: var(--height);
   background-color: ${COLORS.primary};
-  border-radius: ${p => p.value > 99 ? '4px' : '4px 0px 0px 4px'};
+  border-radius: 4px 0 0 4px;
 `
 
 export default ProgressBar;
